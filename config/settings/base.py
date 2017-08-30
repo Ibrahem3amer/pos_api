@@ -56,7 +56,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     # custom users app
     'cl_inn.users.apps.UsersConfig',
-    # Your stuff: custom apps go here
+    'pos',
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
