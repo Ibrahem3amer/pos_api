@@ -1,0 +1,5 @@
+[run]
+include = cl_inn/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
