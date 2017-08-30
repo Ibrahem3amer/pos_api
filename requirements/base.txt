@@ -14,6 +14,10 @@ django-environ==0.4.4
 # Models
 django-model-utils==3.0.0
 
+# Forms
+django-braces==1.11.0
+django-crispy-forms==1.6.1
+
 # Password storage
 argon2-cffi==16.3.0
 
