@@ -1,6 +1,6 @@
 from django.db import models
 from pos import validators as custom_validators
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 class Shop(models.Model):
@@ -24,8 +24,8 @@ class Receipt(models.Model):
         validators=[custom_validators.GeneralCMSValidator.name_validator]
     )
     date = models.DateTimeField(auto_now=True)
-    total_amount = models.FloatField()
-    paid_amount = models.FloatField(validators=[MinLengthValidator(0, paid_msg)])
+    total_amount = models.FloatField(default=0)
+    paid_amount = models.FloatField(validators=[MinValueValidator(0, paid_msg)])
     user = models.ForeignKey(
         'users.User',
         related_name='items',
@@ -51,10 +51,10 @@ class Item(models.Model):
         max_length=255,
         validators=[custom_validators.GeneralCMSValidator.name_validator]
     )
-    price = models.FloatField(validators=[MinLengthValidator(0, price_msg)])
-    discount = models.FloatField(validators=[MinLengthValidator(0, price_msg)], default=0)
+    price = models.FloatField(validators=[MinValueValidator(0, price_msg)])
+    discount = models.FloatField(validators=[MinValueValidator(0, price_msg)], default=0)
     stock_amount = models.IntegerField(
-        validators=[MinLengthValidator(0, stock_amount_msg)]
+        validators=[MinValueValidator(0, stock_amount_msg)]
     )
     receipt = models.ForeignKey(
         'Receipt',
