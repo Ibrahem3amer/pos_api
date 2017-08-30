@@ -31,6 +31,11 @@ class Receipt(models.Model):
         related_name='items',
         on_delete=models.CASCADE
     )
+    shop = models.ForeignKey(
+        'Shop',
+        related_name='receipts',
+        on_delete=models.CASCADE
+    )
     cashier = models.IntegerField(default=-1) # Can be updated in future.
 
 
@@ -51,8 +56,8 @@ class Item(models.Model):
     stock_amount = models.IntegerField(
         validators=[MinLengthValidator(0, stock_amount_msg)]
     )
-    Receipt = models.ForeignKey(
-        'Shop',
+    receipt = models.ForeignKey(
+        'Receipt',
         related_name='items',
         on_delete=models.CASCADE
     )
