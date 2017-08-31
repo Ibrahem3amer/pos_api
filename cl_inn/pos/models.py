@@ -60,9 +60,17 @@ class Receipt(models.Model):
 
     def get_avg(self):
         """ Returns the average of receipts items."""
-        items_avg = Item.objects.filter(receipt=self).aggregate(target=models.Avg('total_price'))
-        print(items_avg['target'])
 
+        # Annotate the total price for each item, calculate the avg.
+        items_avg = Item.objects.filter(
+            receipt=self
+        ).annotate(
+            total=models.F('price') - (models.F('discount')*models.F('price'))
+        ).aggregate(
+            target=models.Avg('total')
+        )
+        
+        return items_avg['target'] or 0
 
 
 class Item(models.Model):
