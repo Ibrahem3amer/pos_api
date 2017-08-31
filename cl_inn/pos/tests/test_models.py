@@ -181,6 +181,29 @@ class ReceiptTest(TestCase):
 		# Assert test
 		self.assertEqual(r.paid_amount, 0)
 
+	def test_average_per_receipt(self):
+		""" Returns true and updates paid_amount."""
+		
+		# Setup test
+		r = Receipt.objects.create(
+			name=self.name,
+			shop=self.shop,
+			user=self.user
+		)
+		for i in range(3):
+			Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=300,
+				discount=0,
+				stock_amount=3,
+				receipt=r
+			)
+
+		# Exercise test
+		# Assert test
+		self.assertEqual(r.get_avg(), 0)
+
 
 class ItemTest(TestCase):
 
