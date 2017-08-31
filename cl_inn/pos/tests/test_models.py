@@ -129,6 +129,57 @@ class ReceiptTest(TestCase):
 		# Assert test
 		self.assertEqual(r.total_amount, 375)
 
+	def test_pay_receipt_with_positive_parameter_eq_amount(self):
+		""" Returns true and updates paid_amount."""
+		
+		# Setup test
+		r = Receipt.objects.create(
+			name=self.name,
+			shop=self.shop,
+			user=self.user
+		)
+		for i in range(3):
+			Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=300,
+				discount=0,
+				stock_amount=3,
+				receipt=r
+			)
+
+		# Exercise test
+		r.pay_receipt(900)
+
+
+		# Assert test
+		self.assertEqual(r.paid_amount, 900)
+
+	def test_pay_receipt_with_positive_parameter_ls_amount(self):
+		""" Returns true and updates paid_amount."""
+		
+		# Setup test
+		r = Receipt.objects.create(
+			name=self.name,
+			shop=self.shop,
+			user=self.user
+		)
+		for i in range(3):
+			Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=300,
+				discount=0,
+				stock_amount=3,
+				receipt=r
+			)
+
+		# Exercise test
+		r.pay_receipt(400)
+
+
+		# Assert test
+		self.assertEqual(r.paid_amount, 0)
 
 
 class ItemTest(TestCase):
