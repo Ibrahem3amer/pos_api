@@ -71,4 +71,241 @@ class ReceiptTest(TestCase):
 		with self.assertRaisesRegexp(ValidationError, 'Money cannot be negative!'):
 			r.full_clean()
 
+	def test_correct_total_amount(self):
+		""" Returns the sum of total price for each item.
+		>>> 300, 300, 300
+		900
+		"""
+		
+		# Setup test
+		r = Receipt.objects.create(
+			name=self.name,
+			paid_amount=-100,
+			shop=self.shop,
+			user=self.user
+		)
+
+		# Exercise test
+		for i in range(3):
+			item = Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=300,
+				discount=0,
+				stock_amount=3,
+				receipt=r
+			)
+
+		# Assert test
+		self.assertEqual(r.total_amount, 900)
+
+	def test_correct_total_amount_with_discounted_values(self):
+		""" Returns the sum of total price for each item.
+		>>> (100, 0.10), (2458, 1), (300, 0.05)
+		375
+		"""
+		
+		# Setup test
+		r = Receipt.objects.create(
+			name=self.name,
+			paid_amount=-100,
+			shop=self.shop,
+			user=self.user
+		)
+		prices = [100, 2458, 300]
+		discounts = [0.10, 1, 0.05]
+
+		# Exercise test
+		for i in range(3):
+			item = Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=prices[i],
+				discount=discounts[i],
+				stock_amount=3,
+				receipt=r
+			)
+
+		# Assert test
+		self.assertEqual(r.total_amount, 375)
+
+
+
+class ItemTest(TestCase):
+
+	def setUp(self):
+		self.shop = Shop.objects.create(name='Big Shop')
+		self.user = User.objects.create_user(username='Ibrahem', password='010d1d5ss57cxs1x0d')
+		self.name = 'Big new item'
+		self.paid_amount = 1000
+		self.receipt = Receipt.objects.create(
+			name=self.name,
+			paid_amount=self.paid_amount,
+			shop=self.shop,
+			user=self.user
+		)
+		self.code = '515ds1d5s1a231$%&FSas'
+		self.itm_name = 'new one'
+		self.price = 10
+		self.stock_amount = 3
+
+	def test_basic_item(self):
+		""" Saves an item successfully."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=self.price,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		itms_in_db = Item.objects.all().count()
+
+		# Assert test
+		self.assertEqual(None, item.full_clean())
+		self.assertTrue(itms_in_db > 0)
+
+	def test_negative_price(self):
+		""" Yales that price cannot be negative."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=-10,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		# Assert test
+		with self.assertRaisesRegexp(ValidationError, 'Price cannot be negative!'):
+			item.full_clean()
+
+	def test_negative_stock_amount(self):
+		""" Yales that stock is empty."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=self.price,
+			stock_amount=-1,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		# Assert test
+		with self.assertRaisesRegexp(ValidationError, 'Stock is empty!'):
+			item.full_clean()
+
+	def test_total_amount(self):
+		""" Returns correct price after discount.
+		>>> price=300, discount=0.10
+		270
+		>>> price=25000, discount=0.07
+		23250
+		"""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			discount=0.10,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+		item2 = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=25000,
+			discount=0.07,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		# Assert test
+		self.assertEqual(item2.total_price, 23250)
+
+	def test_total_amount_with_negative_discount(self):
+		""" Yales that discount cannot be negative."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			discount=-0.10,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+		# Exercise test
+		# Assert test
+		with self.assertRaisesRegexp(ValidationError, 'Price cannot be negative!'):
+			item.full_clean()
+
+	def test_total_amount_with_discount_gt_price(self):
+		""" Yales that discount cannot be greater than price."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			discount=3,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+		# Exercise test
+		# Assert test
+		with self.assertRaisesRegexp(ValidationError, 'Discount should be less than original price!'):
+			item.full_clean()
+
+	def test_set_stock_amount(self):
+		""" Changes item's stock_amount by i."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+		# Exercise test
+		# Assert test
+		with self.assertRaisesRegexp(ValidationError, 'Price cannot be negative!'):
+			item.full_clean()
+
+	def test_most_sold_item(self):
+		""" Returns item with stock_amount = 1."""
+		
+		# Setup test
+		prices = [100, 2458, 300]
+		stock = [10, 1, 35]
+
+		# Exercise test
+		for i in range(3):
+			Item.objects.create(
+				name='item',
+				code='item'+str(i),
+				price=prices[i],
+				stock_amount=stock[i],
+				receipt=self.receipt
+			)
+
+		# Assert test
+		self.assertEqual(Item.get_most_sold().first().stock_amount, 1)
+
+	def test_most_sold_item_when_no_items(self):
+		""" Returns None."""
+		
+		# Setup test
+		# Assert test
+		self.assertEqual(Item.get_most_sold().first(), None)
 
