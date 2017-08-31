@@ -277,10 +277,12 @@ class ItemTest(TestCase):
 			stock_amount=self.stock_amount,
 			receipt=self.receipt
 		)
+
 		# Exercise test
+		item.set_stock_amount(99)
+
 		# Assert test
-		with self.assertRaisesRegexp(ValidationError, 'Price cannot be negative!'):
-			item.full_clean()
+		self.assertNotEqual(item.stock_amount, self.stock_amount)
 
 	def test_most_sold_item(self):
 		""" Returns item with stock_amount = 1."""
