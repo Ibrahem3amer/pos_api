@@ -48,6 +48,9 @@ class Receipt(models.Model):
 
         return result
 
+    def pay_receipt(self):
+        """ Marks receipts as paid."""
+
 
 class Item(models.Model):
 
@@ -98,14 +101,12 @@ class Item(models.Model):
 
     def decrease_stock(self, i=1):
         """ Decreases the item stock by i items."""
-        if i > self.stock_amount:
-            return False
-        self.stock_amount -= int(i)
+        if i <= self.stock_amount:
+            self.stock_amount -= int(i)
 
     def set_stock_amount(self, amount=0):
         """ Set stock amount to given amount."""
-        amount = 0 if amount < 0 else amount
-        self.stock_amount = int(amount)
+        self.stock_amount = int(amount) if int(amount) >= 0 else self.stock_amount
 
 
 

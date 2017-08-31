@@ -283,6 +283,82 @@ class ItemTest(TestCase):
 
 		# Assert test
 		self.assertNotEqual(item.stock_amount, self.stock_amount)
+		self.assertEqual(item.stock_amount, 99)
+
+	def test_set_stock_amount_with_negative(self):
+		""" Doesn't change anything."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		item.set_stock_amount(-99)
+
+		# Assert test
+		self.assertEqual(item.stock_amount, self.stock_amount)
+		self.assertNotEqual(item.stock_amount, 99)
+
+	def test_decrease_stock_with_no_parameter(self):
+		""" Decreases stock amount by 1."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		item.decrease_stock()
+
+		# Assert test
+		self.assertTrue(item.stock_amount < self.stock_amount)
+		self.assertEqual(item.stock_amount, self.stock_amount-1)
+
+	def test_decrease_stock_with_positive_parameter_ls_amount(self):
+		""" Decreases stock amount by 5."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			stock_amount=10,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		item.decrease_stock(5)
+
+		# Assert test
+		self.assertTrue(item.stock_amount < 10)
+		self.assertEqual(item.stock_amount, 10-5)
+
+	def test_decrease_stock_with_positive_parameter_gt_amount(self):
+		""" Doesn't change anything."""
+		
+		# Setup test
+		item = Item.objects.create(
+			name=self.itm_name,
+			code=self.code,
+			price=300,
+			stock_amount=self.stock_amount,
+			receipt=self.receipt
+		)
+
+		# Exercise test
+		item.decrease_stock(5)
+
+		# Assert test
+		self.assertEqual(item.stock_amount, self.stock_amount)
 
 	def test_most_sold_item(self):
 		""" Returns item with stock_amount = 1."""
