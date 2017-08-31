@@ -8,11 +8,11 @@ from pos.models import *
 @api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
 def receipts_list(request, format=None):
-    """ Receipts lists associated with auth user."""
+    """ Receipts list associated with auth user."""
     if request.method == 'GET':
         # Retrieve all receipts that owned by user.
         try:
-            receipts = request.user.receipts or None
+            receipts = Receipt.objects.filter(user=request.user)
             receipts_serialized = ReceiptSerializer(receipts, many = True)
             return Response(receipts_serialized.data)
         except:

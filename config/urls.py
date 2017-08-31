@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
 
     # APIs
-    url(r'^api/', include('pos.urls')),    
+    url(r'^api/', include('pos.api_urls')),    
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

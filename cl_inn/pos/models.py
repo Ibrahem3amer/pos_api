@@ -1,6 +1,9 @@
 from django.db import models
-from pos import validators as custom_validators
+from django.conf import settings 
 from django.core.validators import MinValueValidator, MaxValueValidator
+from pos import validators as custom_validators
+
+
 
 # Create your models here.
 class Shop(models.Model):
@@ -29,7 +32,7 @@ class Receipt(models.Model):
         default=0
     )
     user = models.ForeignKey(
-        'users.User',
+        settings.AUTH_USER_MODEL,
         related_name='items',
         on_delete=models.CASCADE
     )
@@ -72,6 +75,10 @@ class Receipt(models.Model):
         
         return items_avg['target'] or 0
 
+    def __str__(self):
+
+        return self.name +' of '+self.user.username
+
 
 class Item(models.Model):
 
@@ -81,7 +88,7 @@ class Item(models.Model):
     discount_msg = 'Discount should be less than original price!'
 
     # Attributes
-    code = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
     name = models.CharField(
         max_length=255,
         validators=[custom_validators.GeneralCMSValidator.name_validator]
@@ -128,5 +135,8 @@ class Item(models.Model):
         """ Set stock amount to given amount."""
         self.stock_amount = int(amount) if int(amount) >= 0 else self.stock_amount
 
+    def __str__(self):
+
+        return self.name +'@'+self.receipt.name
 
 
