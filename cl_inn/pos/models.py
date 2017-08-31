@@ -24,7 +24,10 @@ class Receipt(models.Model):
         validators=[custom_validators.GeneralCMSValidator.name_validator]
     )
     date = models.DateTimeField(auto_now=True)
-    paid_amount = models.FloatField(validators=[MinValueValidator(0, paid_msg)])
+    paid_amount = models.FloatField(
+        validators=[MinValueValidator(0, paid_msg)],
+        default=0
+    )
     user = models.ForeignKey(
         'users.User',
         related_name='items',
@@ -48,8 +51,12 @@ class Receipt(models.Model):
 
         return result
 
-    def pay_receipt(self):
+    def pay_receipt(self, sum):
         """ Marks receipts as paid."""
+        if self.paid_amount and (sum == self.total_amount):
+            self.paid_amount = float(sum)
+            return True
+        return False
 
 
 class Item(models.Model):
