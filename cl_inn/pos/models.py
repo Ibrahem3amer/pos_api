@@ -31,6 +31,7 @@ class Receipt(models.Model):
         validators=[MinValueValidator(0, paid_msg)],
         default=0
     )
+    change = models.FloatField(default=0)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='items',
@@ -54,12 +55,19 @@ class Receipt(models.Model):
 
         return result
 
-    def pay_receipt(self, sum):
+    def pay_receipt(self, sum, change=False):
         """ Marks receipts as paid."""
-        if (not self.paid_amount) and (sum == self.total_amount):
-            self.paid_amount = float(sum)
-            self.save()
-            return True
+        if not change:
+            if (not self.paid_amount) and (sum == self.total_amount):
+                self.paid_amount = float(sum)
+                self.save()
+                return True
+        else:
+            if (not self.paid_amount) and (sum >= self.total_amount):
+                self.paid_amount = float(sum)
+                self.change = sum - self.total_amount
+                self.save()
+                return True
         return False
 
     def get_avg(self):

@@ -149,7 +149,7 @@ class ReceiptTest(TestCase):
 			)
 
 		# Exercise test
-		r.pay_receipt(900)
+		r.pay_receipt(900, False)
 
 
 		# Assert test
@@ -175,7 +175,7 @@ class ReceiptTest(TestCase):
 			)
 
 		# Exercise test
-		r.pay_receipt(400)
+		r.pay_receipt(400, False)
 
 
 		# Assert test

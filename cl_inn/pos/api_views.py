@@ -75,12 +75,29 @@ def pay_receipt(request, receipt_id, format = None):
     try:
         receipt = Receipt.objects.get(pk=receipt_id)
         money = request.POST.get('money', -1)
-        if receipt.pay_receipt(float(money)):
+        if receipt.pay_receipt(float(money), False):
             return Response(status=status.HTTP_200_OK)        
     except Receipt.DoesNotExist:
         pass
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def pay_receipt_with_change(request, receipt_id, format = None):
+    """ Pays receipt total cost."""
+
+    try:
+        receipt = Receipt.objects.get(pk=receipt_id)
+        money = request.POST.get('money', -1)
+        if receipt.pay_receipt(float(money), True):
+            return Response(status=status.HTTP_200_OK)        
+    except Receipt.DoesNotExist:
+        pass
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
