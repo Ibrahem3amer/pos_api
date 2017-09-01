@@ -58,6 +58,7 @@ class Receipt(models.Model):
         """ Marks receipts as paid."""
         if (not self.paid_amount) and (sum == self.total_amount):
             self.paid_amount = float(sum)
+            self.save()
             return True
         return False
 
