@@ -21,7 +21,7 @@ def receipts_list(request, format=None):
 
     if request.method == 'POST':
         # Insert new receipt.
-        receipt_instance = ReceiptSerializer(data=request.data)
+        receipt_instance = ReceiptPOSTSerializer(data=request.data)
         if receipt_instance.is_valid():
             receipt_instance.save()
             return Response(receipt_instance.data, status=status.HTTP_201_CREATED)
@@ -30,10 +30,10 @@ def receipts_list(request, format=None):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes((IsAuthenticated,))
-def receipt_instance(request, id, format=None):
+def receipt_instance(request, receipt_id, format=None):
     try:
-        receipt = Receipt.objects.get(pk=pk)
-    except receipt.DoesNotExist:
+        receipt = Receipt.objects.get(pk=receipt_id)
+    except Receipt.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':

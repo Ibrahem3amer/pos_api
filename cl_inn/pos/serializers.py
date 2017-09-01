@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model   = User
-        fields  = ('id', 'username', 'email', 'password')
+        fields  = ('id', 'username', 'email')
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -22,6 +22,13 @@ class ReceiptSerializer(serializers.ModelSerializer):
 
     shop = ShopSerializer(read_only=True)
     user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Receipt
+        fields = ('__all__')
+
+
+class ReceiptPOSTSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Receipt

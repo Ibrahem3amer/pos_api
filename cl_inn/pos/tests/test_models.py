@@ -325,7 +325,7 @@ class ItemTest(TestCase):
 		)
 		item2 = Item.objects.create(
 			name=self.itm_name,
-			code=self.code,
+			code=self.code+'5d5d5d',
 			price=25000,
 			discount=0.07,
 			stock_amount=self.stock_amount,
