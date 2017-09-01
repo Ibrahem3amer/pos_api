@@ -55,6 +55,32 @@ def receipt_instance(request, receipt_id, format=None):
         receipt.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def receipt_avg(request, receipt_id, format = None):
+    """ Returns average of receipt's items."""
+
+    try:
+        receipt = Receipt.objects.get(pk=receipt_id)
+        return Response({'average': receipt.get_avg()})
+    except Receipt.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def pay_receipt(request, receipt_id, format = None):
+    """ Pays receipt total cost."""
+
+    try:
+        receipt = Receipt.objects.get(pk=receipt_id)
+        money = request.POST.get('money', -1)
+        if receipt.pay_receipt(float(money)):
+            return Response(status=status.HTTP_200_OK)        
+    except Receipt.DoesNotExist:
+        pass
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'POST'])
 @permission_classes((IsAuthenticated,))
@@ -106,27 +132,25 @@ def item_instance(request, item_id, format=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-def receipt_avg(request, receipt_id, format = None):
-    """ Returns average of receipt's items."""
-
-    try:
-        receipt = Receipt.objects.get(pk=receipt_id)
-        return Response({'average': receipt.get_avg()})
-    except Receipt.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-
 @api_view(['POST'])
-def pay_receipt(request, receipt_id, format = None):
-    """ Pays receipt total cost."""
+@permission_classes((IsAuthenticated,))
+def set_stock(request, item_id, format = None):
+    """ Override the current stock amount of given item."""
 
     try:
-        receipt = Receipt.objects.get(pk=receipt_id)
-        money = request.POST.get('money', -1)
-        if receipt.pay_receipt(float(money)):
-            return Response(status=status.HTTP_200_OK)        
-    except Receipt.DoesNotExist:
-        pass
+        item = Item.objects.get(pk=item_id)
+        amount = request.POST.get('amount', -1)
+        item.set_stock_amount(amount)
+        return Response(status=status.HTTP_200_OK)        
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def get_most_sold(request, format = None):
+    """ Returns the most sold item(s)."""
+
+    items = Item.get_most_sold()
+    serializer = ItemSerializer(items, many=True)
+    return Response(serializer.data)

@@ -78,7 +78,7 @@ class Receipt(models.Model):
 
     def __str__(self):
 
-        return self.name +' of '+self.user.username
+        return 'Receipt #'+ str(self.id) +' of '+self.user.username
 
 
 class Item(models.Model):
@@ -135,9 +135,9 @@ class Item(models.Model):
     def set_stock_amount(self, amount=0):
         """ Set stock amount to given amount."""
         self.stock_amount = int(amount) if int(amount) >= 0 else self.stock_amount
+        self.save()
 
     def __str__(self):
-
         return self.name +'@'+self.receipt.name
 
 
