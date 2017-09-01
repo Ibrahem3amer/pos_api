@@ -37,7 +37,14 @@ class ReceiptPOSTSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
 
-    receipt = ReceiptSerializer(read_only=True)
+    receipt = ReceiptPOSTSerializer(read_only=True)
+
+    class Meta:
+        model = Item
+        fields = ('__all__')
+        
+
+class ItemPOSTSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
